@@ -19,3 +19,5 @@ I should be able to use [Arduino as ISP](https://docs.arduino.cc/built-in-exampl
 * How does arduino know that flash should be reprogrammed?
 
 ## Debugging atmega328
+
+## Building an OS on atmega
