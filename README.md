@@ -13,4 +13,8 @@ Atmega168 is basically the same as ATMega328, only difference is memory(I think)
 
 I should be able to use [Arduino as ISP](https://docs.arduino.cc/built-in-examples/arduino-isp/ArduinoISP) for burning the bootloader in a similar way to AVR-ISP, however it is not suggested as a possible solution on the [Hacking bootloader page](https://docs.arduino.cc/hacking/software/Bootloader) which is a bit concerning. Will need to verify in some way.
 
+How does arduino write to flash during boot?
+How does arduino lock flash after boot?
+How does arduino know that flash should be reprogrammed?
+
 ## Debugging atmega328
