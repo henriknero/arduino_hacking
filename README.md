@@ -17,6 +17,8 @@ I should be able to use [Arduino as ISP](https://docs.arduino.cc/built-in-exampl
   - The Z-pointer(Reg-31, Reg-30) is used to address the flash when doing SPM(Store Program Memory) commands. 
 * How does arduino lock flash after boot?
 * How does arduino know that flash should be reprogrammed?
+* How to burn bootloader using avrdude?
+* How to compile bootloader?
 
 ## Debugging atmega328
 
