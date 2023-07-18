@@ -18,6 +18,20 @@ I should be able to use [Arduino as ISP](https://docs.arduino.cc/built-in-exampl
 * How does arduino lock flash after boot?
 * How does arduino know that flash should be reprogrammed?
 * How to burn bootloader using avrdude?
+  - The following command is used by the arduino IDE: `"/home/john/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/home/john/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega328p -cstk500v1 -P/dev/ttyACM0 -b19200 -e -Ulock:w:0x3F:m -Uefuse:w:0xFD:m -Uhfuse:w:0xDE:m -Ulfuse:w:0xFF:m`
+  - `"/home/john/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/home/john/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega328p -cstk500v1 -P/dev/ttyACM0 -b19200 "-Uflash:w:/home/john/.arduino15/packages/arduino/hardware/avr/1.8.6/bootloaders/optiboot/optiboot_atmega328.hex:i" -Ulock:w:0x0F:m`
+  - The above commands starts by setting the fuses E,H,L, and Lock to the appropriate value. After that has been done it flashes the memory with the optiboot and the it locks the bootloader again(?)
+
+  - The following command is used when only uploading new code without burning: `"/home/john/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/home/john/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -V -patmega328p -carduino "-P/dev/ttyACM0" -b115200 -D "-Uflash:w:/tmp/arduino/sketches/8C287CA5DFAAAC53D74333981D095D93/Blink.ino.hex:i"`
+    + -carduino specifies which programmer to use
+    + -patmega328p specifies which platform/device we are uploading to
+    + -P/dev/ttyACM0 specifies which Port
+    + -b115200 specifies the baudrate to send at
+    + -D disables autoerase for some reason??
+    + "-Uflash:w:/tmp/arduino/sketches/8C287CA5DFAAAC53D74333981D095D93/Blink.ino.hex:i" specifies to perform a memory operation. Each parameter is separated by a colon. Variable 1 specifies where we want to write. Variable 2 specifies what operation ("r"ead, "w"rite, "v"erify). Variable 3 specifies where to read from or write to. Variable 4 specifies which format we are working with. E.g. Intel hex for i
+  * What stops you from writing to bootloader while in application code?
+
+
 * How to compile bootloader?
   - There exists Makefiles which can be run to create .hex. This can be found in source-code.
 * How do I inspect the compiled bootloader?
