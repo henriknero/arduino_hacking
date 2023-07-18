@@ -19,6 +19,12 @@ I should be able to use [Arduino as ISP](https://docs.arduino.cc/built-in-exampl
 * How does arduino know that flash should be reprogrammed?
 * How to burn bootloader using avrdude?
 * How to compile bootloader?
+  - There exists Makefiles which can be run to create .hex. This can be found in source-code.
+* How do I inspect the compiled bootloader?
+  - .HEX only contains the bare minimum, meaning it has stripped of all unnecessary stuff. Which is why its very small.
+  - When compiling using Arduino IDE you get a version that contains both the binary, the hex representation, the binary+bootloader, and the same in hex. By using the following command you can disassemble the .hex file.
+  - `avr-objdump -m avr:5 -D <hexfile>`
+  - The bootloader resides at 0x7e00- and the application code resides at 0x0000.
 
 ## Debugging atmega328
 
