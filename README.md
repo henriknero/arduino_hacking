@@ -1,30 +1,26 @@
 # arduino_hacking
 ## Enabling writing to flash on arduino at runtime.
-This is not intended, but I want to learn how to do it.
-1. Figure out how to address flash memory at runtime.
-2. Figure out if possible to write to flash at runtime.
-3. Since I know it is not possible to write at runtime, figure out how to rewrite the firmware to be able to write code there.
-4. Rewrite the firmware
-5. Profit
+The ATmega chip is a very cheap and powerful chip that is likely the most used hobbyist chip. One of the weaknesses of the chip is the lack of a bigger amount of non-volatile memory. There is however, a giant flash-memory for the program which you probably don't need all of(32kB-512bytes to be precise). The problem is only that it is not accessible. So the question is can we make it accessible?
 
-## Researching stuff
+The short answer is yes, yes we can. This guy [Majekw](https://github.com/majekw/optiboot/blob/master/optiboot/bootloaders/optiboot/optiboot.c) has already done it in a simple wrapper. The secret sauce is that you need to put the SPM instruction in the booloader section and call it from you application. If you do that you are good to go.
+
+### How does the ATmega write to flash-memory?
+The only instruction that can write to flash is the SPM instruction. This instruction utilize the SPMCSR(Store Program Memory Control and Status Register) for parameters and the Z register to address the flash-memory. Whenever you write something to SPMCSR you have 4 clockcycles to call the SPM function, unless you do that the register will clear itself. This instruction is not allowed to run except if it is in the bootloader section of the flash however, which is why we need to do some "hacking" to work around the problem.
+
+### "Hacking" in the SPM instruction. 
+Majekw has created a function called do_spm that resides in the bootloader. By making that function public, it can be called from the application. He has created a simple [example](https://github.com/majekw/optiboot/blob/master/optiboot/examples/test_dospm/test_dospm.ino) that can be used as well to understand it.
+
+## Notes found during research
 Atmega168 is basically the same as ATMega328, only difference is memory(I think).
 [Atmega168 bootloader source](https://github.com/arduino/ArduinoCore-avr/blob/master/bootloaders/atmega/ATmegaBOOT_168.c)
 
 I should be able to use [Arduino as ISP](https://docs.arduino.cc/built-in-examples/arduino-isp/ArduinoISP) for burning the bootloader in a similar way to AVR-ISP, however it is not suggested as a possible solution on the [Hacking bootloader page](https://docs.arduino.cc/hacking/software/Bootloader) which is a bit concerning. Will need to verify in some way.
-
-### How to write to flash (after I figured it out)
-1. Create a custom bootloader that contains a function to write to the flash. (You need to do this since the SPM operation that is the only way to write to flash is only allowed to be run from the bootloader section)
-2. Call that function from the application code.
-
-Here is a dude that has done it: https://github.com/majekw/optiboot/blob/master/optiboot/bootloaders/optiboot/optiboot.c
 
 ### How does arduino lock flash after boot?
 The arduino does not lock the flash during boot, the application part of the flash is never locked in the current configuration. This can be changed by setting the BLB01 and BLB02 to 0. However, the operation that is used to write to flash is only enabled in the bootloader section of the program.
 ```
 ATmega48A/PA/88A/PA/168A/PA/328/P support a real Read-While-Write Self-Programming mechanism. There is a separate Boot Loader Section, and the SPM instruction can only execute from there.
 ```
-### How does arduino know that flash should be reprogrammed?
 
 ### How to burn bootloader using avrdude?
 The following command is used by the arduino IDE: 
@@ -62,6 +58,10 @@ The following command is used when only uploading new code without burning:
   - When compiling using Arduino IDE you get a version that contains both the binary, the hex representation, the binary+bootloader, and the same in hex. By using the following command you can disassemble the .hex file.
   - `avr-objdump -m avr:5 -D <hexfile>`
   - The bootloader resides at 0x7e00- and the application code resides at 0x0000.
+
+## Other questions
+
+### How does arduino know that flash should be reprogrammed?
 
 ## Debugging atmega328
 
